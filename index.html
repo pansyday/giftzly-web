@@ -5,19 +5,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- OpenGraph fallback -->
-<meta property="og:type" content="website">
-<meta property="og:title" content="Giftzly – Liste de cadeaux">
-<meta property="og:description" content="Découvrez une liste de cadeaux partagée via Giftzly.">
-<meta property="og:image" content="https://giftzly-web.vercel.app/assets/og-default.png">
-<meta property="og:url" content="https://giftzly-web.vercel.app">
-<meta property="og:site_name" content="Giftzly">
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Giftzly – Liste de cadeaux">
+  <meta property="og:description" content="Découvrez une liste de cadeaux partagée via Giftzly.">
+  <meta property="og:image" content="https://giftzly-web.vercel.app/assets/og-default.png">
+  <meta property="og:url" content="https://giftzly-web.vercel.app">
+  <meta property="og:site_name" content="Giftzly">
 
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Giftzly – Liste de cadeaux">
-<meta name="twitter:description" content="Découvrez une liste de cadeaux partagée via Giftzly.">
-<meta name="twitter:image" content="https://giftzly-web.vercel.app/assets/og-default.png">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Giftzly – Liste de cadeaux">
+  <meta name="twitter:description" content="Découvrez une liste de cadeaux partagée via Giftzly.">
+  <meta name="twitter:image" content="https://giftzly-web.vercel.app/assets/og-default.png">
 
   <title>Giftzly – Liste de cadeaux</title>
 
@@ -39,7 +39,6 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-  <!-- Meta -->
   <meta name="theme-color" content="#009C9B">
   <meta name="description" content="Consultez et réservez un cadeau dans une liste partagée Giftzly.">
 
@@ -58,11 +57,9 @@
   <!-- HEADER -->
   <header class="w-full bg-white dark:bg-gray-900 shadow-sm py-3 px-6 flex items-center gap-3">
 
-    <!-- Logo adaptatif -->
     <picture>
       <source srcset="assets/logo-dark.png" media="(prefers-color-scheme: dark)">
-      <img src="assets/logo-light.png" alt="Giftzly"
-           class="w-10 h-10 rounded-xl object-cover" />
+      <img src="assets/logo-light.png" class="w-10 h-10 rounded-xl object-cover" />
     </picture>
 
     <h1 class="text-2xl font-bold tracking-tight text-teal-700 dark:text-teal-300">
@@ -70,9 +67,7 @@
     </h1>
   </header>
 
-  <!-- Spacer -->
   <div class="h-6"></div>
-
 
   <!-- CONTENT WRAPPER -->
   <div id="app" class="max-w-4xl mx-auto px-4 pb-20">
@@ -110,43 +105,42 @@
 
       <!-- ITEMS -->
       <h3 class="text-2xl font-semibold mt-8 mb-3 text-teal-700 dark:text-teal-300">Cadeaux</h3>
-
       <div id="items-container" class="space-y-4"></div>
 
     </div>
   </div>
 
+  <!-- MODAL (réserver & annuler) -->
+  <div 
+    id="modal" 
+    class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 fade-in">
 
-  <!-- POPUP RÉSERVATION -->
-  <div id="popup" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-    <div class="bg-white dark:bg-gray-800 w-80 rounded-xl p-6 shadow-xl fade-in">
+    <div id="modal-content"
+         class="bg-white dark:bg-gray-800 w-80 rounded-xl p-6 shadow-xl transform scale-95 opacity-0 transition-all">
 
-      <h3 class="text-lg font-bold text-teal-700 dark:text-teal-300 mb-4">Réserver ce cadeau</h3>
+      <h3 id="modal-title" class="text-lg font-bold text-teal-700 dark:text-teal-300 mb-4"></h3>
 
-      <input id="popup-name" type="text" placeholder="Votre prénom"
-             class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 mb-3 
-                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+      <div id="modal-body"></div>
 
-      <input id="popup-email" type="email" placeholder="Votre email"
-             class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 mb-4 
-                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+      <div class="mt-5 flex justify-end gap-3">
+        <button id="modal-cancel-btn" 
+          class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:underline">
+          Annuler
+        </button>
 
-      <button id="popup-confirm"
-        class="w-full bg-teal-600 text-white py-2 rounded-lg font-semibold shadow hover:bg-teal-700 transition">
-        Réserver
-      </button>
-
-      <button id="popup-close"
-        class="w-full text-gray-500 mt-3">
-        Annuler
-      </button>
+        <button id="modal-confirm-btn"
+          class="px-4 py-2 bg-teal-600 text-white rounded-lg font-semibold shadow hover:bg-teal-700 transition">
+          Confirmer
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="hidden fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white z-50"></div>
 
   <!-- SCRIPT -->
   <script>
-
     /* -----------------------------
        CONSTANTES
     ------------------------------ */
@@ -163,43 +157,85 @@
       "https://wboqgmorfyqfhzonbvkm.supabase.co/functions/v1/public-cancel-reservation";
 
     const APP_DEEPLINK = "giftzly://list/" + token;
-    const APP_STORE_URL = "https://apps.apple.com/app/id0000000000"; // ← Mets ton App Store ID ici
-
+    const APP_STORE_URL = "https://apps.apple.com/app/id0000000000";
 
     /* -----------------------------
-       DOM ELEMENTS
+       ELEMENTS DOM
     ------------------------------ */
     const loadingEl = document.getElementById("loading");
     const contentEl = document.getElementById("content");
-
     const coverEl = document.getElementById("cover");
     const titleEl = document.getElementById("title");
     const descEl = document.getElementById("description");
     const ownerEl = document.getElementById("owner");
-
     const itemsContainer = document.getElementById("items-container");
 
-    const popup = document.getElementById("popup");
-    const popupName = document.getElementById("popup-name");
-    const popupEmail = document.getElementById("popup-email");
-    const popupConfirmBtn = document.getElementById("popup-confirm");
-    const popupCloseBtn = document.getElementById("popup-close");
+    /* -----------------------------
+       MODAL SYSTEM
+    ------------------------------ */
+    const modal = document.getElementById("modal");
+    const modalContent = document.getElementById("modal-content");
+    const modalTitle = document.getElementById("modal-title");
+    const modalBody = document.getElementById("modal-body");
+    const modalCancelBtn = document.getElementById("modal-cancel-btn");
+    const modalConfirmBtn = document.getElementById("modal-confirm-btn");
 
+    let modalConfirmAction = null;
     let currentItemId = null;
 
+    function openModal({ title, bodyHTML, onConfirm }) {
+      modalTitle.textContent = title;
+      modalBody.innerHTML = bodyHTML;
+      modalConfirmAction = onConfirm;
 
-    /* -----------------------------
-       DEEP LINK APP
-    ------------------------------ */
-    document.getElementById("open-app-btn").onclick = (e) => {
-      e.preventDefault();
-      window.location.href = APP_DEEPLINK;
-      setTimeout(() => { window.location.href = APP_STORE_URL; }, 900);
+      modal.classList.remove("hidden");
+
+      setTimeout(() => {
+        modalContent.classList.remove("scale-95", "opacity-0");
+        modalContent.classList.add("scale-100", "opacity-100");
+      }, 20);
+    }
+
+    function closeModal() {
+      modalContent.classList.add("scale-95", "opacity-0");
+      modalContent.classList.remove("scale-100", "opacity-100");
+
+      setTimeout(() => {
+        modal.classList.add("hidden");
+      }, 150);
+    }
+
+    modalCancelBtn.onclick = closeModal;
+
+    modalConfirmBtn.onclick = () => {
+      if (modalConfirmAction) modalConfirmAction();
     };
 
+    /* -----------------------------
+      TOAST NOTIFICATION
+    ------------------------------ */
+    function notifySuccess(msg) {
+      showToast(msg, "bg-teal-600");
+    }
+
+    function notifyError(msg) {
+      showToast(msg, "bg-red-600");
+    }
+
+    function showToast(msg, colorClass) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.className = `fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white z-50 ${colorClass} fade-in`;
+
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2500);
+    }
 
     /* -----------------------------
-       CHARGEMENT LISTE
+       LOAD LIST
     ------------------------------ */
     async function loadList() {
       const res = await fetch(PUBLIC_LIST_URL + token);
@@ -213,46 +249,44 @@
       loadingEl.classList.add("hidden");
       contentEl.classList.remove("hidden");
 
-      // HERO
       titleEl.textContent = data.list.title;
       descEl.textContent = data.list.description || "";
       coverEl.src = data.list.cover_url;
-
-      // OWNER
       ownerEl.textContent = "Liste créée par " + (data.list.owner_name || "l’auteur");
 
-      // ITEMS
       itemsContainer.innerHTML = "";
 
       data.items.forEach(item => {
         const card = document.createElement("div");
-        card.className =
-          "bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex fade-in";
+        card.className = "bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex fade-in";
 
         const reservedText =
           item.is_reserved
             ? `
-      <span class="text-red-600 dark:text-red-400 font-semibold">
-        Déjà réservé ${
-          item.guest_name
-            ? `par ${item.guest_name}`
-            : item.reserved_by_name
-              ? `par ${item.reserved_by_name}`
-              : ""
-        }
-      </span>
+              <div class="flex items-center gap-1">
 
-      ${
-        item.guest_email
-          ? `<button data-cancel-id="${item.id}"
-                     class="cancel-btn text-sm text-red-700 dark:text-red-400 underline ml-1">
-                Annuler
-             </button>`
-          : ""
-      }
-      `
+                <span class="px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/40
+                             text-red-700 dark:text-red-300 text-xs font-semibold">
+                  Réservé
+                </span>
+
+                <span class="text-sm text-gray-600 dark:text-gray-300">
+                  ${item.guest_name ? `par ${item.guest_name}` : ""}
+                </span>
+
+                ${
+                  item.guest_email
+                    ? `<button data-cancel-id="${item.id}"
+                               class="cancel-btn text-xs text-red-600 dark:text-red-400 underline ml-2">
+                          Annuler
+                       </button>`
+                    : ""
+                }
+              </div>
+            `
             : `<button data-id="${item.id}"
-                 class="reserve-btn bg-teal-600 text-white px-4 py-2 rounded-lg font-medium shadow hover:bg-teal-700 transition">
+                       class="reserve-btn bg-teal-600 text-white px-4 py-2 rounded-lg font-medium 
+                       shadow hover:bg-teal-700 transition">
                  Réserver
                </button>`;
 
@@ -261,10 +295,7 @@
 
           <div class="flex-1">
             <h4 class="font-semibold text-lg">${item.title}</h4>
-
-            <p class="text-gray-600 dark:text-gray-400 text-sm mb-1">
-              ${item.description || ""}
-            </p>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-1">${item.description || ""}</p>
 
             <p class="text-teal-700 dark:text-teal-400 font-semibold mb-1">
               ${item.price ? item.price + " €" : ""}
@@ -279,9 +310,7 @@
                 : ""
             }
 
-            <div class="mt-2">
-              ${reservedText}
-            </div>
+            <div class="mt-2">${reservedText}</div>
           </div>
         `;
 
@@ -289,92 +318,107 @@
       });
     }
 
-
     /* -----------------------------
-       EVENT DELEGATION
-       (RÉSERVER + ANNULER)
+       EVENTS
     ------------------------------ */
+    document.getElementById("open-app-btn").onclick = e => {
+      e.preventDefault();
+      window.location.href = APP_DEEPLINK;
+      setTimeout(() => { window.location.href = APP_STORE_URL; }, 900);
+    };
+
+    /* --- Détection clic (réserve / annule) --- */
     document.addEventListener("click", (e) => {
       const t = e.target;
 
-      // --- RÉSERVER ---
+      /* --- RÉSERVATION --- */
       if (t.matches(".reserve-btn")) {
         currentItemId = t.dataset.id;
-        popup.classList.remove("hidden");
-        return;
-      }
 
-      // --- ANNULER RÉSERVATION ---
-      if (t.matches(".cancel-btn")) {
-        const email = prompt("Entrez l’email utilisé pour réserver :");
-        if (!email) return;
+        openModal({
+          title: "Réserver ce cadeau",
+          bodyHTML: `
+            <input id="modal-name" type="text" placeholder="Votre prénom"
+                   class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 mb-3
+                          bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
 
-        fetch(CANCEL_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            token,
-            item_id: t.dataset.cancelId,
-            email
-          })
-        })
-        .then(r => r.json())
-        .then(resp => {
-          if (resp.success) {
-            alert("Réservation annulée !");
-            loadList();
-          } else {
-            alert(resp.error || "Erreur.");
+            <input id="modal-email" type="email" placeholder="Votre email"
+                   class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2
+                          bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+          `,
+          onConfirm: async () => {
+            const name = document.getElementById("modal-name").value.trim();
+            const email = document.getElementById("modal-email").value.trim();
+
+            if (!name || !email) return notifyError("Veuillez entrer votre prénom et votre email.");
+
+            const res = await fetch(RESERVE_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token, item_id: currentItemId, name, email })
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+              notifySuccess("Réservation confirmée !");
+              closeModal();
+              loadList();
+            } else {
+              notifyError(data.error || "Erreur lors de la réservation.");
+            }
           }
         });
-      }
-    });
 
-
-    /* -----------------------------
-       POPUP CONFIRMATION
-    ------------------------------ */
-    popupCloseBtn.onclick = () => {
-      popup.classList.add("hidden");
-      popupName.value = "";
-      popupEmail.value = "";
-    };
-
-    popupConfirmBtn.onclick = async () => {
-      const name = popupName.value.trim();
-      const email = popupEmail.value.trim();
-
-      if (!name || !email) {
-        alert("Veuillez entrer votre prénom et votre email.");
         return;
       }
 
-      const payload = { token, item_id: currentItemId, name, email };
+      /* --- ANNULATION --- */
+      if (t.matches(".cancel-btn")) {
 
-      const res = await fetch(RESERVE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+        currentItemId = t.dataset.cancelId;
 
-      const data = await res.json();
+        openModal({
+          title: "Annuler la réservation",
+          bodyHTML: `
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+              Entrez l’email utilisé lors de la réservation.
+            </p>
 
-      if (data.success) {
-        alert("Réservation confirmée !");
-        popup.classList.add("hidden");
-        loadList();
-      } else {
-        alert(data.error || "Erreur lors de la réservation.");
+            <input id="modal-email" type="email" placeholder="Votre email"
+                  class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2
+                         bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+          `,
+          onConfirm: async () => {
+            const email = document.getElementById("modal-email").value.trim();
+            if (!email) return notifyError("Veuillez entrer votre email.");
+
+            const res = await fetch(CANCEL_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token, item_id: currentItemId, email })
+            });
+
+            const resp = await res.json();
+
+            if (resp.success) {
+              notifySuccess("Réservation annulée !");
+              closeModal();
+              loadList();
+            } else {
+              notifyError(resp.error || "Erreur lors de l'annulation.");
+            }
+          }
+        });
+
+        return;
       }
-    };
-
+    });
 
     /* -----------------------------
        START
     ------------------------------ */
     loadList();
-
   </script>
-
 </body>
 </html>
