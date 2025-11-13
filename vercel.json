@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/l/:token",
+      "destination": "/index.html?token=:token"
+    }
+  ]
+}
