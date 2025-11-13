@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/l/:token",
+      "source": "/L/:token",
       "destination": "/index.html?token=:token"
     }
   ]
