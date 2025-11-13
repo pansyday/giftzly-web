@@ -260,35 +260,35 @@
         const card = document.createElement("div");
         card.className = "bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex fade-in";
 
-        const reservedText =
-          item.is_reserved
-            ? `
-              <div class="flex items-center gap-1">
+const reservedText =
+  item.is_reserved
+    ? `
+      <div class="flex items-center gap-2">
 
-                <span class="px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/40
-                             text-red-700 dark:text-red-300 text-xs font-semibold">
-                  Réservé
-                </span>
+        <span class="
+          px-2 py-1 rounded-full text-xs font-semibold
+          bg-red-600 text-white
+          dark:bg-red-900 dark:text-red-200
+        ">
+          Réservé${item.reserver_name ? ` par ${item.reserver_name}` : ""}
+        </span>
 
-                <span class="text-sm text-gray-600 dark:text-gray-300">
-                  ${item.guest_name ? `par ${item.guest_name}` : ""}
-                </span>
+        ${
+          item.is_guest_reservation
+            ? `<button data-cancel-id="${item.id}"
+                       class="cancel-btn text-xs text-red-400 underline ml-1">
+                  Annuler
+               </button>`
+            : ""
+        }
 
-                ${
-                  item.guest_email
-                    ? `<button data-cancel-id="${item.id}"
-                               class="cancel-btn text-xs text-red-600 dark:text-red-400 underline ml-2">
-                          Annuler
-                       </button>`
-                    : ""
-                }
-              </div>
-            `
-            : `<button data-id="${item.id}"
-                       class="reserve-btn bg-teal-600 text-white px-4 py-2 rounded-lg font-medium 
-                       shadow hover:bg-teal-700 transition">
-                 Réserver
-               </button>`;
+      </div>
+    `
+    : `<button data-id="${item.id}"
+               class="reserve-btn bg-teal-600 text-white px-4 py-2 rounded-lg font-medium 
+               shadow hover:bg-teal-700 transition">
+         Réserver
+       </button>`;
 
         card.innerHTML = `
           <img src="${item.image_url}" class="w-24 h-24 rounded-lg object-cover mr-4">
