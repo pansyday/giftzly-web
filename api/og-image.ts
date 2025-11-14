@@ -7,7 +7,7 @@ import { Resvg } from '@resvg/resvg-js';
 
 // Police TTF compatible Satori (Inter)
 const fontUrl =
-  'https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter-Regular.ttf';
+  'https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Regular.ttf';
 
 let fontData: ArrayBuffer | null = null;
 
