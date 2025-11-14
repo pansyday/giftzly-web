@@ -1,0 +1,17 @@
+{
+  "name": "giftzly-og",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "vercel-build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "@vercel/node": "3.2.7",
+    "satori": "0.10.7",
+    "@resvg/resvg-js": "2.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.19",
+    "typescript": "5.4.5"
+  }
+}
