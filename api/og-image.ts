@@ -5,13 +5,13 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 
-// Police TTF compatible Satori (Inter)
+// Police TTF compatible Satori (Poppins)
 const fontUrl =
   'https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Regular.ttf';
 
 let fontData: ArrayBuffer | null = null;
 
-// Fonction utilitaire : fetch de la police (cache)
+// Fonction utilitaire : fetch de la police
 async function loadFont() {
   if (!fontData) {
     const res = await fetch(fontUrl);
@@ -29,7 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
-    // 1) Fetch data from Supabase Edge Function public-list
+    // 1) Récupération de la liste via Supabase Edge Function
     const apiUrl = `${process.env.SUPABASE_URL}/functions/v1/public-list?token=${token}`;
     const publicListRes = await fetch(apiUrl, {
       headers: {
@@ -49,10 +49,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       list.cover_url ||
       'https://giftzly-web.vercel.app/assets/og-default.png';
 
-    // 2) Load the font
-    const fontData = await loadFont();
+    // 2) Police
+    const font = await loadFont();
 
-    // 3) Generate SVG using Satori
+    // 3) SVG via Satori — VERSION FIXÉE
     const svg = await satori(
       {
         type: 'div',
@@ -64,51 +64,73 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            fontFamily: 'Inter',
+            fontFamily: 'Poppins',
           },
           children: [
-            // Background
+            // IMAGE DE COVER (plein écran – obligatoire pour Satori)
             {
-              type: 'div',
+              type: 'img',
               props: {
+                src: cover,
                 style: {
                   position: 'absolute',
-                  inset: '0',
-                  backgroundImage: `url(${cover})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  opacity: 0.32,
+                  left: 0,
+                  top: 0,
+                  width: '1200px',
+                  height: '630px',
+                  objectFit: 'cover',
                 },
               },
             },
 
-            // Tint teal
+            // OVERLAY NOIR
             {
               type: 'div',
               props: {
                 style: {
                   position: 'absolute',
-                  inset: '0',
+                  left: 0,
+                  top: 0,
+                  width: '1200px',
+                  height: '630px',
+                  background: 'rgba(0,0,0,0.38)',
+                },
+              },
+            },
+
+            // GRADIENT TEAL
+            {
+              type: 'div',
+              props: {
+                style: {
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  width: '1200px',
+                  height: '630px',
                   background:
-                    'linear-gradient(180deg, rgba(20,184,166,0.45), rgba(0,0,0,0.55))',
+                    'linear-gradient(180deg, rgba(20,184,166,0.35), rgba(0,0,0,0.55))',
                 },
               },
             },
 
-            // Vignette
+            // VIGNETTE (assombrissement)
             {
               type: 'div',
               props: {
                 style: {
                   position: 'absolute',
-                  inset: '0',
+                  left: 0,
+                  top: 0,
+                  width: '1200px',
+                  height: '630px',
                   background:
-                    'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.55) 80%)',
+                    'radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.55) 85%)',
                 },
               },
             },
 
-            // Liquid Glass Card
+            // --- CARTE GLASS ---
             {
               type: 'div',
               props: {
@@ -124,26 +146,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   alignItems: 'center',
                   justifyContent: 'center',
                   position: 'relative',
+                  zIndex: 10,
                 },
                 children: [
-                  // Reflet haut
-                  {
-                    type: 'div',
-                    props: {
-                      style: {
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: '40px',
-                        background:
-                          'linear-gradient(180deg, rgba(255,255,255,0.33), rgba(255,255,255,0))',
-                        borderRadius: '32px 32px 0 0',
-                      },
-                    },
-                  },
-
-                  // Title
                   {
                     type: 'div',
                     props: {
@@ -169,8 +174,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         height: 630,
         fonts: [
           {
-            name: 'Inter',
-            data: fontData,
+            name: 'Poppins',
+            data: font,
             weight: 400,
             style: 'normal',
           },
@@ -181,7 +186,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 4) Convert SVG → PNG
     const png = new Resvg(svg, {
       fitTo: { mode: 'width', value: 1200 },
-    }).render().asPng();
+    })
+      .render()
+      .asPng();
 
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Cache-Control', 'public, max-age=3600');
