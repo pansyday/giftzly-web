@@ -53,7 +53,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       cover = 'https://giftzly-web.vercel.app/assets/og-default.png';
     }
 
-    const logoUrl = 'https://giftzly-web.vercel.app/assets/logo-light.png';
     const font = await loadFont();
 
     const svg = await satori(
@@ -70,7 +69,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             fontFamily: 'Poppins',
           },
           children: [
-            // BACKGROUND (1 child → OK)
+            // BACKGROUND
             {
               type: 'img',
               props: {
@@ -85,7 +84,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               },
             },
 
-            // OVERLAY (1 child → OK)
+            // DARK OVERLAY
             {
               type: 'div',
               props: {
@@ -97,7 +96,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               },
             },
 
-            // CARD (has multiple children → MUST BE FLEX)
+            // CARD (opacity updated)
             {
               type: 'div',
               props: {
@@ -105,10 +104,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   width: '900px',
                   padding: '60px 50px',
                   borderRadius: '36px',
-                  background: 'rgba(255,255,255,0.18)',
-                  border: '1px solid rgba(255,255,255,0.22)',
-                  boxShadow: '0 12px 40px rgba(0,0,0,0.35)',
-                  backdropFilter: 'blur(12px)',
+                  background: 'rgba(255,255,255,0.32)',     // ← PLUS OPACIFIÉ
+                  border: '1px solid rgba(255,255,255,0.35)',
+                  boxShadow: '0 18px 45px rgba(0,0,0,0.38)',
+                  backdropFilter: 'blur(18px)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
@@ -117,7 +116,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   zIndex: 10,
                 },
                 children: [
-                  // TITLE
                   {
                     type: 'div',
                     props: {
@@ -130,8 +128,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                       children: title,
                     },
                   },
-
-                  // OWNER
                   {
                     type: 'div',
                     props: {
@@ -147,23 +143,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               },
             },
 
-            // LOGO (1 child → OK)
+            // GIFTZLY FOOTER TEXT
             {
-              type: 'img',
+              type: 'div',
               props: {
-                src: logoUrl,
                 style: {
                   position: 'absolute',
                   right: '40px',
                   bottom: '40px',
-                  width: '140px',
-                  opacity: 0.85,
+                  color: 'white',
+                  fontSize: '38px',
+                  fontWeight: 600,
+                  opacity: 0.9,
+                  textShadow: '0 3px 10px rgba(0,0,0,0.45)',
                 },
+                children: 'Giftzly',
               },
             },
           ],
         },
       },
+
       {
         width: 1200,
         height: 630,
