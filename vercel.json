@@ -9,18 +9,12 @@
       "source": "/og-image",
       "destination": "https://wboqgmorfyqfhzonbvkm.supabase.co/functions/v1/public-list-og-image"
     },
-
     {
       "source": "/",
       "has": [
         { "type": "query", "key": "token" }
       ],
       "destination": "/og/:token"
-    },
-
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
     }
   ]
-} 
+}
