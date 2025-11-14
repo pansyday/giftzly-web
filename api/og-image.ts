@@ -182,7 +182,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ],
       }
     );
-
+ 
     // 4) Convert SVG → PNG
     const png = new Resvg(svg, {
       fitTo: { mode: 'width', value: 1200 },
