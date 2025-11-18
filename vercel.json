@@ -5,6 +5,7 @@
       "source": "/auth/callback",
       "destination": "/auth/callback.html"
     },
+
     {
       "source": "/og/:token",
       "destination": "https://wboqgmorfyqfhzonbvkm.supabase.co/functions/v1/public-list-og/:token"
