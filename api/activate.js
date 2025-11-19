@@ -1,13 +1,14 @@
 export default async function handler(req, res) {
-  const { link } = req.query;
+  const { link, redirect_to } = req.query;
 
-  if (!link) {
-    return res.status(400).send("Missing link");
-  }
+  if (!link) return res.status(400).send("Missing link");
 
-  // Décoder l’URL complète envoyée par Supabase
-  const decoded = decodeURIComponent(link);
+  const decodedLink = decodeURIComponent(link);
 
-  // Redirection vers Supabase pour confirmation de signup
-  return res.redirect(307, decoded);
+  // Ajoute redirect_to à l’URL Supabase si fourni
+  const finalUrl = redirect_to
+    ? `${decodedLink}&redirect_to=${encodeURIComponent(redirect_to)}`
+    : decodedLink;
+
+  return res.redirect(307, finalUrl);
 }
