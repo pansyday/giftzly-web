@@ -338,13 +338,13 @@ const reservedText =
     document.addEventListener("click", (e) => {
       const t = e.target;
 
-/* --- RÉSERVATION --- */
-if (t.matches(".reserve-btn") && !isLoadingAction) {
-    currentItemId = t.dataset.id;
+      /* --- RÉSERVATION --- */
+      if (t.matches(".reserve-btn")) {
+        currentItemId = t.dataset.id;
 
-    openModal({
-        title: "Réserver ce cadeau",
-        bodyHTML: `
+        openModal({
+          title: "Réserver ce cadeau",
+          bodyHTML: `
             <input id="modal-name" type="text" placeholder="Votre prénom"
                    class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 mb-3
                           bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
@@ -353,51 +353,32 @@ if (t.matches(".reserve-btn") && !isLoadingAction) {
                    class="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2
                           bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
           `,
-        onConfirm: async () => {
-            if (isLoadingAction) return;
-            isLoadingAction = true;
-
-            // Loader sur le bouton
-            modalConfirmBtn.disabled = true;
-            modalConfirmBtn.innerHTML =
-              `<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>`;
-
+          onConfirm: async () => {
             const name = document.getElementById("modal-name").value.trim();
             const email = document.getElementById("modal-email").value.trim();
 
-            if (!name || !email) {
-                notifyError("Veuillez entrer votre prénom et votre email.");
-                modalConfirmBtn.disabled = false;
-                modalConfirmBtn.textContent = "Confirmer";
-                isLoadingAction = false;
-                return;
-            }
+            if (!name || !email) return notifyError("Veuillez entrer votre prénom et votre email.");
 
             const res = await fetch(RESERVE_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, item_id: currentItemId, name, email })
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token, item_id: currentItemId, name, email })
             });
 
             const data = await res.json();
 
-            // Restore button
-            isLoadingAction = false;
-            modalConfirmBtn.disabled = false;
-            modalConfirmBtn.textContent = "Confirmer";
-
             if (data.success) {
-                notifySuccess("Réservation confirmée !");
-                closeModal();
-                loadList();
+              notifySuccess("Réservation confirmée !");
+              closeModal();
+              loadList();
             } else {
-                notifyError(data.error || "Erreur lors de la réservation.");
+              notifyError(data.error || "Erreur lors de la réservation.");
             }
-        }
-    });
+          }
+        });
 
-    return;
-    }
+        return;
+      }
 
       /* --- ANNULATION --- */
       if (t.matches(".cancel-btn")) {
