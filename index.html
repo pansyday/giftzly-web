@@ -50,11 +50,6 @@
     .fade-in { animation: fadeIn .4s ease-out forwards; opacity: 0; }
     @keyframes fadeIn { to { opacity: 1; } }
   </style>
-  <script
-  src="/api/og-head?token=<?php echo $_GET['token'] ?? '' ?>"
-  type="text/html">
-</script>
-
 </head>
 
 <body class="text-gray-800 dark:text-gray-200">
@@ -115,7 +110,7 @@
     </div>
   </div>
 
-  <!-- MODAL (réserver & annuler) -->
+  <!-- MODAL -->
   <div 
     id="modal" 
     class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 fade-in">
@@ -141,7 +136,7 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION -->
+  <!-- TOAST -->
   <div id="toast" class="hidden fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg text-sm text-white z-50"></div>
 
   <!-- SCRIPT -->
@@ -187,6 +182,7 @@
 
     let modalConfirmAction = null;
     let currentItemId = null;
+    let isLoadingAction = false;
 
     function openModal({ title, bodyHTML, onConfirm }) {
       modalTitle.textContent = title;
@@ -265,37 +261,33 @@
         const card = document.createElement("div");
         card.className = "bg-white dark:bg-gray-800 rounded-xl shadow p-4 flex fade-in";
 
-const reservedText =
-  item.is_reserved
-    ? `
-      <div class="flex items-center gap-2">
+        const reservedText =
+          item.is_reserved
+            ? `
+              <div class="flex items-center gap-2">
+                <span class="
+                  px-2 py-1 rounded-full text-xs font-semibold
+                  bg-red-600 text-white
+                  dark:bg-red-900 dark:text-red-200
+                ">
+                  Réservé${item.reserver_name ? ` par ${item.reserver_name}` : ""}
+                </span>
 
-        <span class="
-          px-2 py-1 rounded-full text-xs font-semibold
-          bg-red-600 text-white
-          dark:bg-red-900 dark:text-red-200
-        ">
-          Réservé${item.reserver_name ? ` par ${item.reserver_name}` : ""}
-        </span>
-
-        ${
-          item.guest_email
-            ? `<button data-cancel-id="${item.id}"
-                       class="cancel-btn text-xs text-red-400 underline ml-1">
-                  Annuler
-               </button>`
-            : ""
-        }
-
-
-      </div>
-    `
-    : `<button data-id="${item.id}"
-               class="reserve-btn bg-teal-600 text-white px-4 py-2 rounded-lg font-medium 
-               shadow hover:bg-teal-700 transition">
-         Réserver
-       </button>`;
-
+                ${
+                  item.guest_email
+                    ? `<button data-cancel-id="${item.id}"
+                               class="cancel-btn text-xs text-red-400 underline ml-1">
+                          Annuler
+                       </button>`
+                    : ""
+                }
+              </div>
+            `
+            : `<button data-id="${item.id}"
+                       class="reserve-btn bg-teal-600 text-white px-4 py-2 rounded-lg font-medium 
+                       shadow hover:bg-teal-700 transition">
+                 Réserver
+               </button>`;
 
         card.innerHTML = `
           <img src="${item.image_url}" class="w-24 h-24 rounded-lg object-cover mr-4">
@@ -328,17 +320,19 @@ const reservedText =
     /* -----------------------------
        EVENTS
     ------------------------------ */
+
+    // --- Ouvrir l'app mobile ---
     document.getElementById("open-app-btn").onclick = e => {
       e.preventDefault();
       window.location.href = APP_DEEPLINK;
       setTimeout(() => { window.location.href = APP_STORE_URL; }, 900);
     };
 
-    /* --- Détection clic (réserve / annule) --- */
+    /* --- Réservation --- */
     document.addEventListener("click", (e) => {
       const t = e.target;
 
-      /* --- RÉSERVATION --- */
+      /* --- RÉSERVER --- */
       if (t.matches(".reserve-btn")) {
         currentItemId = t.dataset.id;
 
@@ -354,10 +348,25 @@ const reservedText =
                           bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
           `,
           onConfirm: async () => {
+
+            if (isLoadingAction) return;
+            isLoadingAction = true;
+
+            // Loader
+            modalConfirmBtn.disabled = true;
+            modalConfirmBtn.innerHTML =
+              `<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>`;
+
             const name = document.getElementById("modal-name").value.trim();
             const email = document.getElementById("modal-email").value.trim();
 
-            if (!name || !email) return notifyError("Veuillez entrer votre prénom et votre email.");
+            if (!name || !email) {
+              notifyError("Veuillez entrer votre prénom et votre email.");
+              modalConfirmBtn.disabled = false;
+              modalConfirmBtn.textContent = "Confirmer";
+              isLoadingAction = false;
+              return;
+            }
 
             const res = await fetch(RESERVE_URL, {
               method: "POST",
@@ -366,6 +375,10 @@ const reservedText =
             });
 
             const data = await res.json();
+
+            isLoadingAction = false;
+            modalConfirmBtn.disabled = false;
+            modalConfirmBtn.textContent = "Confirmer";
 
             if (data.success) {
               notifySuccess("Réservation confirmée !");
@@ -397,6 +410,7 @@ const reservedText =
                          bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
           `,
           onConfirm: async () => {
+
             const email = document.getElementById("modal-email").value.trim();
             if (!email) return notifyError("Veuillez entrer votre email.");
 
