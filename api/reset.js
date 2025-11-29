@@ -1,16 +1,10 @@
-// /api/reset.js — Compatible Vercel Node 18 / Edge, Outlook, Apple Mail, etc.
-
 export default async function handler(req, res) {
   try {
-    // 1) Récupération de la query string brute
     const url = new URL(req.url, `https://${req.headers.host}`);
 
     let rawQuery = url.search.replace(/^\?/, "");
-
-    // 2) Corrections nécessaires pour Outlook / Apple Mail
     rawQuery = rawQuery.replace(/&amp;/g, "&");
 
-    // 3) Parsing propre via URLSearchParams
     const params = new URLSearchParams(rawQuery);
 
     const token_hash = params.get("token_hash");
@@ -24,8 +18,20 @@ export default async function handler(req, res) {
       });
     }
 
-    // 4) Redirection vers Supabase
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    // 🚨 RÉCUPÉRATION SÉCURISÉE DE L’URL SUPABASE
+    let supabaseUrl =
+      process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.SUPABASE_URL ||
+      null;
+
+    if (!supabaseUrl) {
+      return res.status(500).json({
+        error: "missing_supabase_url",
+        message: "NEXT_PUBLIC_SUPABASE_URL is not configured in Vercel"
+      });
+    }
+
+    supabaseUrl = supabaseUrl.replace(/\/$/, ""); // retirer trailing slash
 
     const target =
       `${supabaseUrl}/auth/v1/verify` +
@@ -36,7 +42,6 @@ export default async function handler(req, res) {
         : "");
 
     return res.redirect(307, target);
-
   } catch (error) {
     console.error("reset.js ERROR:", error);
     return res.status(500).json({
