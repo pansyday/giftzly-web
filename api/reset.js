@@ -7,11 +7,11 @@ export default async function handler(req, res) {
 
     const params = new URLSearchParams(rawQuery);
 
-    const token_hash = params.get("token_hash");
+    const token = params.get("token");
     const type = params.get("type");
     const redirect_to = params.get("redirect_to");
 
-    if (!token_hash || !type) {
+    if (!token || !type) {
       return res.status(400).json({
         error: "missing_params",
         message: "token_hash and type are required"
@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     const target =
       `${supabaseUrl}/auth/v1/verify` +
       `?type=${encodeURIComponent(type)}` +
-      `&token_hash=${encodeURIComponent(token_hash)}` +
+      `&token=${encodeURIComponent(token)}` +
       (redirect_to
         ? `&redirect_to=${encodeURIComponent(redirect_to)}`
         : "");
