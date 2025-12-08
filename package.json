@@ -6,9 +6,10 @@
     "vercel-build": "echo 'No build step required'"
   },
   "dependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "@supabase/supabase-js": "^2.86.2",
     "@vercel/node": "3.2.7",
-    "satori": "0.10.7",
-    "@resvg/resvg-js": "2.6.2"
+    "satori": "0.10.7"
   },
   "devDependencies": {
     "@types/node": "20.11.19",

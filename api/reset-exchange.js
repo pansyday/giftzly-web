@@ -1,45 +1,45 @@
-// File: api/reset-exchange.js
+// api/reset-exchange.js
 
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const { createClient } = require("@supabase/supabase-js");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
-    const token = req.query.token;
-    const type = req.query.type;
+    const { token, type } = req.query;
 
     if (!token || type !== "recovery") {
       return res.status(400).send("Invalid reset link.");
     }
 
-    // Configuration Supabase (server-side!)
+    // Supabase server client (SERVICE ROLE)
     const supabase = createClient(
       process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY, // important
-      { auth: { autoRefreshToken: false, persistSession: false } }
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
     );
 
-    // 1️⃣ Échange du code PKCE côté serveur
+    // Exchange PKCE token server-side
     const { data, error } = await supabase.auth.exchangeCodeForSession(token);
 
     if (error) {
-      console.error("PKCE exchange error:", error);
+      console.error("SUPABASE ERROR:", error);
       return res.status(401).send("Invalid or expired recovery link.");
     }
 
-    // data.session contient {access_token, refresh_token, ...}
-
-    // 2️⃣ On stocke access_token dans un cookie HTTP Only
-    // Pour que ton HTML puisse utiliser updateUser() sans refaire l’échange
+    // Write cookies
     res.setHeader("Set-Cookie", [
       `giftzly_access_token=${data.session.access_token}; Path=/; HttpOnly; Secure; SameSite=Lax`,
-      `giftzly_refresh_token=${data.session.refresh_token}; Path=/; HttpOnly; Secure; SameSite=Lax`
+      `giftzly_refresh_token=${data.session.refresh_token}; Path=/; HttpOnly; Secure; SameSite=Lax`,
     ]);
 
-    // 3️⃣ Redirection vers ta page reset-password
+    // Redirect to your HTML page
     return res.redirect(302, "/reset-password");
-
   } catch (err) {
-    console.error("Unexpected error:", err);
-    return res.status(500).send("Internal server error.");
+    console.error("FATAL ERROR:", err);
+    return res.status(500).send("Server internal error.");
   }
-}
+};
