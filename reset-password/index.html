@@ -475,6 +475,21 @@
 
       const url = new URL(window.location.href);
       const code = url.searchParams.get("code");
+
+      const loadingEl      = document.getElementById("loading");
+      const formWrapperEl  = document.getElementById("formWrapper");
+      const formEl         = document.getElementById("form");
+      const successWrapper = document.getElementById("successWrapper");
+      const statusEl       = document.getElementById("status");
+      const submitBtn      = document.getElementById("submitBtn");
+      const passwordInput  = document.getElementById("password");
+
+      const ruleElements = {
+        length: document.querySelector('[data-rule="length"]'),
+        lower:  document.querySelector('[data-rule="lower"]'),
+        upper:  document.querySelector('[data-rule="upper"]'),
+        digit:  document.querySelector('[data-rule="digit"]'),
+      };
     
       if (code) {
         try {
@@ -496,21 +511,7 @@
         loadingEl.classList.add("hidden");
       }
 
-      const loadingEl      = document.getElementById("loading");
-      const formWrapperEl  = document.getElementById("formWrapper");
-      const formEl         = document.getElementById("form");
-      const successWrapper = document.getElementById("successWrapper");
-      const statusEl       = document.getElementById("status");
-      const submitBtn      = document.getElementById("submitBtn");
-      const passwordInput  = document.getElementById("password");
-
-      const ruleElements = {
-        length: document.querySelector('[data-rule="length"]'),
-        lower:  document.querySelector('[data-rule="lower"]'),
-        upper:  document.querySelector('[data-rule="upper"]'),
-        digit:  document.querySelector('[data-rule="digit"]'),
-      };
-
+      
       function showForm() {
         loadingEl.classList.add("hidden");
         formWrapperEl.classList.remove("hidden");
