@@ -8,7 +8,6 @@
 
   <style>
     :root {
-      /* Palette claire (par défaut) */
       --accent: #0d9488;
       --accent-dark: #0f766e;
       --bg: #f5f7fa;
@@ -34,7 +33,7 @@
         --text: #e5e7eb;
         --text-light: #94a3b8;
         --border: #1e293b;
-        --badge-bg: rgba(45, 212, 191, 0.12);
+        --badge-bg: rgba(45, 212, 191, 0.10);
         --badge-text: #5eead4;
         --rule-valid: #4ade80;
         --rule-invalid: #64748b;
@@ -99,11 +98,7 @@
       color: var(--badge-text);
       font-weight: 500;
       margin-bottom: 18px;
-      border: 1px solid rgba(153, 246, 228, 0.7);
-    }
-
-    .badge-icon {
-      font-size: 13px;
+      border: 1px solid rgba(153, 246, 228, 0.6);
     }
 
     .title {
@@ -119,56 +114,32 @@
       margin-bottom: 20px;
     }
 
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 8px;
-    }
-
-    label {
+    .loading {
       font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    .field-wrapper {
-      margin-bottom: 10px;
-    }
-
-    input[type="password"] {
-      width: 100%;
-      padding: 11px 14px;
-      font-size: 15px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      outline: none;
-      transition: border 0.2s, box-shadow 0.2s, background 0.2s;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      input[type="password"] {
-        background: rgba(15, 23, 42, 0.95);
-        color: var(--text);
-      }
-    }
-
-    input[type="password"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(45, 212, 191, 0.4);
-    }
-
-    .hint {
-      font-size: 12px;
       color: var(--text-light);
+      display: flex;
+      align-items: center;
+      gap: 8px;
       margin-top: 4px;
     }
+    .loading-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+      opacity: 0.6;
+      animation: pulse 1s infinite ease-in-out;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.15s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes pulse {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50%      { transform: translateY(-2px); opacity: 1; }
+    }
 
+    .hidden { display: none !important; }
+
+    /* Formulaire */
     .rules {
       margin-top: 10px;
       padding: 10px 12px;
@@ -176,47 +147,17 @@
       border: 1px dashed var(--border);
       background: rgba(148, 163, 184, 0.05);
     }
-
-    .rules-title {
-      font-size: 12px;
-      color: var(--text-light);
-      margin-bottom: 6px;
-    }
-
     .rule {
       display: flex;
       align-items: center;
       gap: 7px;
       font-size: 13px;
-      color: var(--text-light);
       margin-bottom: 4px;
     }
-
-    .rule:last-child {
-      margin-bottom: 0;
-    }
-
-    .rule-icon {
-      width: 16px;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    .rule.valid .rule-icon {
-      color: var(--rule-valid);
-    }
-
-    .rule.valid .rule-text {
-      color: var(--rule-valid);
-    }
-
-    .rule.invalid .rule-icon {
-      color: var(--rule-invalid);
-    }
-
-    .rule.invalid .rule-text {
-      color: var(--rule-invalid);
-    }
+    .rule.valid .rule-icon { color: var(--rule-valid); }
+    .rule.invalid .rule-icon { color: var(--rule-invalid); }
+    .rule.valid .rule-text { color: var(--rule-valid); }
+    .rule.invalid .rule-text { color: var(--rule-invalid); }
 
     .btn {
       margin-top: 18px;
@@ -229,140 +170,48 @@
       background: var(--accent);
       color: white;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s, box-shadow 0.1s;
+      transition: background 0.2s;
       box-shadow: 0 6px 18px rgba(13, 148, 136, 0.32);
     }
+    .btn:active { background: var(--accent-dark); }
 
-    .btn:active {
-      background: var(--accent-dark);
-      transform: translateY(1px);
-      box-shadow: 0 3px 10px rgba(13, 148, 136, 0.4);
-    }
-
-    .btn[disabled] {
-      opacity: 0.6;
-      cursor: default;
-      box-shadow: none;
-      transform: none;
-    }
-
-    .btn-secondary {
-      margin-top: 16px;
-      width: 100%;
-      padding: 11px;
-      font-size: 15px;
-      font-weight: 500;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.15s, border-color 0.15s;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(148, 163, 184, 0.1);
-      border-color: rgba(148, 163, 184, 0.7);
-    }
-
-    .btn-secondary span {
-      font-size: 16px;
-    }
-
-    .status {
-      font-size: 14px;
-      margin-top: 14px;
-      min-height: 18px;
-    }
-
-    .success { color: #16a34a; }
-    .error   { color: #dc2626; }
-
-    .footer {
-      margin-top: 22px;
-      font-size: 12px;
-      color: var(--text-light);
-      text-align: center;
-    }
-
-    .loading {
-      font-size: 14px;
-      color: var(--text-light);
-      margin-top: 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .loading-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--accent);
-      opacity: 0.6;
-      animation: pulse 1s infinite ease-in-out;
-    }
-    .loading-dot:nth-child(2) { animation-delay: 0.15s; }
-    .loading-dot:nth-child(3) { animation-delay: 0.3s; }
-
-    @keyframes pulse {
-      0%, 100% { transform: translateY(0); opacity: 0.3; }
-      50%      { transform: translateY(-2px); opacity: 1; }
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Écran de succès */
+    /* Success screen */
     .success-box {
       margin-top: 8px;
-      padding: 16px 14px 14px;
+      padding: 16px;
       border-radius: 16px;
       border: 1px solid var(--success-border);
       background: var(--success-bg);
     }
-
     .success-icon {
       width: 30px;
       height: 30px;
       border-radius: 999px;
+      background: #22c55e;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #22c55e;
-      color: white;
-      font-size: 18px;
       margin-bottom: 10px;
     }
-
-    .success-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 4px;
+    .btn-secondary {
+      margin-top: 16px;
+      width: 100%;
+      padding: 11px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      text-decoration: none;
       color: var(--text);
-    }
-
-    .success-text {
-      font-size: 13px;
-      color: var(--text-light);
-      margin-bottom: 4px;
-    }
-
-    .success-note {
-      font-size: 12px;
-      color: var(--text-light);
-      margin-top: 6px;
+      text-align: center;
+      display: block;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
+
     <!-- LOGO -->
     <div class="logo">
       <img src="https://giftzly.app/assets/logo-light.png" alt="Giftzly">
@@ -370,18 +219,12 @@
     </div>
 
     <!-- BADGE -->
-    <div class="badge">
-      <span class="badge-icon">🔒</span>
-      <span>Lien sécurisé fourni par Supabase</span>
-    </div>
+    <div class="badge">🔒 Lien sécurisé fourni par Supabase</div>
 
-    <!-- TITRES PRINCIPAUX -->
     <div class="title">Nouveau mot de passe</div>
-    <div class="subtitle">
-      Définissez un nouveau mot de passe pour sécuriser votre compte Giftzly.
-    </div>
+    <div class="subtitle">Définissez un nouveau mot de passe pour sécuriser votre compte.</div>
 
-    <!-- INDICATEUR DE CHARGEMENT SESSION -->
+    <!-- LOADER -->
     <div id="loading" class="loading">
       <div class="loading-dot"></div>
       <div class="loading-dot"></div>
@@ -389,208 +232,145 @@
       <span>Initialisation de la session sécurisée…</span>
     </div>
 
-    <!-- BLOC FORMULAIRE -->
+    <!-- FORMULAIRE -->
     <div id="formWrapper" class="hidden">
-      <form id="form" autocomplete="off">
-        <div class="section-title">Mot de passe</div>
+      <form id="form">
+        <label for="password">Nouveau mot de passe</label>
+        <input id="password" type="password" minlength="6" required placeholder="••••••••" />
 
-        <div class="field-wrapper">
-          <label for="password">Nouveau mot de passe</label>
-          <input
-            id="password"
-            type="password"
-            required
-            minlength="6"
-            placeholder="••••••••"
-            autocomplete="new-password"
-          />
-          <p class="hint">
-            Utilisez un mot de passe unique que vous n’utilisez pas ailleurs.
-          </p>
-        </div>
-
-        <!-- RÈGLES DYNAMIQUES, COMME DANS L’APP -->
         <div class="rules">
-          <div class="rules-title">Doit contenir :</div>
-
           <div class="rule invalid" data-rule="length">
-            <div class="rule-icon">●</div>
-            <div class="rule-text">Au moins 6 caractères</div>
+            <span class="rule-icon">●</span><span class="rule-text">Au moins 6 caractères</span>
           </div>
           <div class="rule invalid" data-rule="lower">
-            <div class="rule-icon">●</div>
-            <div class="rule-text">Une lettre minuscule</div>
+            <span class="rule-icon">●</span><span class="rule-text">Une lettre minuscule</span>
           </div>
           <div class="rule invalid" data-rule="upper">
-            <div class="rule-icon">●</div>
-            <div class="rule-text">Une lettre majuscule</div>
+            <span class="rule-icon">●</span><span class="rule-text">Une lettre majuscule</span>
           </div>
           <div class="rule invalid" data-rule="digit">
-            <div class="rule-icon">●</div>
-            <div class="rule-text">Un chiffre</div>
+            <span class="rule-icon">●</span><span class="rule-text">Un chiffre</span>
           </div>
         </div>
 
-        <button id="submitBtn" type="submit" class="btn">
-          Mettre à jour le mot de passe
-        </button>
-
-        <div id="status" class="status"></div>
+        <button id="submitBtn" class="btn">Mettre à jour le mot de passe</button>
+        <div id="status" style="margin-top:14px; font-size:14px;"></div>
       </form>
     </div>
 
-    <!-- BLOC SUCCÈS -->
+    <!-- SUCCESS -->
     <div id="successWrapper" class="hidden">
       <div class="success-box">
         <div class="success-icon">✓</div>
-        <div class="success-title">Mot de passe mis à jour 🎉</div>
-        <div class="success-text">
-          Votre nouveau mot de passe a bien été enregistré.
-        </div>
-        <div class="success-note">
-          Vous pouvez maintenant vous reconnecter à l’application Giftzly avec ce mot de passe.
+        <div style="font-weight:600; font-size:16px;">Mot de passe mis à jour 🎉</div>
+        <div style="font-size:13px; color:var(--text-light); margin-top:4px;">
+          Vous pouvez maintenant vous reconnecter dans l’application.
         </div>
       </div>
-
-      <a href="giftzly://login" class="btn-secondary">
-        <span>←</span>
-        <span>Retour à l’app Giftzly</span>
-      </a>
+      <a href="giftzly://login" class="btn-secondary">← Retour à l’app Giftzly</a>
     </div>
 
-    <div class="footer">
-      Si vous n’êtes pas à l’origine de cette demande, ignorez simplement cet email.<br />
-      Pour plus de sécurité, vous pouvez ensuite modifier votre mot de passe dans l’app.
-    </div>
   </div>
 
   <script>
     (async () => {
       const { createClient } = supabase;
 
+      // 🔧 REMPLACER
       const SUPABASE_URL = "https://wboqgmorfyqfhzonbvkm.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indib3FnbW9yZnlxZmh6b25idmttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3NDc2MDAsImV4cCI6MjA3NzMyMzYwMH0.xKzHSU2wLzHvtC3Tnf90xH_1hDJL4_KKCDoSxP9yWJg";
 
       const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      const loadingEl      = document.getElementById("loading");
-      const formWrapperEl  = document.getElementById("formWrapper");
-      const formEl         = document.getElementById("form");
-      const successWrapper = document.getElementById("successWrapper");
-      const statusEl       = document.getElementById("status");
-      const submitBtn      = document.getElementById("submitBtn");
-      const passwordInput  = document.getElementById("password");
+      const url = new URL(window.location.href);
+      const code = url.searchParams.get("code");
 
-      const ruleElements = {
-        length: document.querySelector('[data-rule="length"]'),
-        lower:  document.querySelector('[data-rule="lower"]'),
-        upper:  document.querySelector('[data-rule="upper"]'),
-        digit:  document.querySelector('[data-rule="digit"]'),
-      };
+      const loadingEl = document.getElementById("loading");
+      const formWrapperEl = document.getElementById("formWrapper");
+      const successWrapperEl = document.getElementById("successWrapper");
+      const statusEl = document.getElementById("status");
 
       function showForm() {
         loadingEl.classList.add("hidden");
         formWrapperEl.classList.remove("hidden");
-        successWrapper.classList.add("hidden");
       }
 
       function showSuccess() {
         formWrapperEl.classList.add("hidden");
         loadingEl.classList.add("hidden");
-        successWrapper.classList.remove("hidden");
+        successWrapperEl.classList.remove("hidden");
       }
 
-      function setStatus(message, type) {
-        statusEl.textContent = message || "";
-        statusEl.className = "status" + (type ? " " + type : "");
+      function setStatus(msg, type) {
+        statusEl.textContent = msg || "";
+        statusEl.style.color = type === "error" ? "#dc2626" : "#16a34a";
       }
 
-      // 🔐 Update dynamique des règles, comme dans l’app
+      // 🔥 IMPORTANT : Échanger le code pour une session valide
+      if (code) {
+        const { error } = await client.auth.exchangeCodeForSession(code);
+        if (error) {
+          loadingEl.classList.add("hidden");
+          setStatus("Lien invalide ou expiré.", "error");
+        } else {
+          showForm();
+        }
+      } else {
+        loadingEl.classList.add("hidden");
+        setStatus("Lien incorrect : aucun code fourni.", "error");
+      }
+
+      // Validation dynamique
+      const passwordInput = document.getElementById("password");
+      const rules = {
+        length: document.querySelector('[data-rule="length"]'),
+        lower: document.querySelector('[data-rule="lower"]'),
+        upper: document.querySelector('[data-rule="upper"]'),
+        digit: document.querySelector('[data-rule="digit"]'),
+      };
+
       function updateRules(password) {
-        const hasLength = password.length >= 6;
-        const hasLower  = /[a-z]/.test(password);
-        const hasUpper  = /[A-Z]/.test(password);
-        const hasDigit  = /[0-9]/.test(password);
-
-        const rulesMap = {
-          length: hasLength,
-          lower:  hasLower,
-          upper:  hasUpper,
-          digit:  hasDigit,
+        const checks = {
+          length: password.length >= 6,
+          lower: /[a-z]/.test(password),
+          upper: /[A-Z]/.test(password),
+          digit: /[0-9]/.test(password),
         };
 
-        for (const key in rulesMap) {
-          const el = ruleElements[key];
-          const ok = rulesMap[key];
-
-          if (!el) continue;
-
-          el.classList.toggle("valid", ok);
-          el.classList.toggle("invalid", !ok);
-
-          const iconEl = el.querySelector(".rule-icon");
-          if (iconEl) {
-            iconEl.textContent = ok ? "✓" : "●";
-          }
+        for (const key in checks) {
+          const el = rules[key];
+          const valid = checks[key];
+          el.classList.toggle("valid", valid);
+          el.classList.toggle("invalid", !valid);
+          el.querySelector(".rule-icon").textContent = valid ? "✓" : "●";
         }
 
-        return hasLength && hasLower && hasUpper && hasDigit;
+        return Object.values(checks).every(Boolean);
       }
 
       passwordInput.addEventListener("input", (e) => {
-        const value = e.target.value ?? "";
-        updateRules(value);
+        updateRules(e.target.value);
         setStatus("", null);
       });
 
-      // Supabase détecte automatiquement le token dans l’URL (#access_token…)
-      client.auth.onAuthStateChange((event, session) => {
-        if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
-          showForm();
-        }
-      });
-
-      formEl.addEventListener("submit", async (e) => {
+      // Submit formulaire
+      document.getElementById("form").addEventListener("submit", async (e) => {
         e.preventDefault();
-        setStatus("", null);
+        const pwd = passwordInput.value || "";
 
-        const newPassword = (passwordInput.value || "").trim();
-        const allValid = updateRules(newPassword);
-
-        if (!allValid) {
-          setStatus(
-            "Le mot de passe ne respecte pas tous les critères indiqués.",
-            "error"
-          );
+        if (!updateRules(pwd)) {
+          setStatus("Le mot de passe ne respecte pas les critères.", "error");
           return;
         }
 
-        submitBtn.disabled = true;
-
-        const { error } = await client.auth.updateUser({ password: newPassword });
-
+        const { error } = await client.auth.updateUser({ password: pwd });
         if (error) {
           setStatus(error.message, "error");
-          submitBtn.disabled = false;
           return;
         }
 
-        // Succès : on affiche l’écran dédié + bouton retour app
         showSuccess();
       });
-
-      // Fallback si Supabase ne déclenche pas l’événement (lien invalide/expiré, etc.)
-      setTimeout(() => {
-        if (formWrapperEl.classList.contains("hidden") &&
-            successWrapper.classList.contains("hidden")) {
-          showForm();
-          setStatus(
-            "Impossible de confirmer automatiquement votre session. Le lien peut être expiré. " +
-            "Vous pouvez recommencer depuis l’app si une erreur survient.",
-            "error"
-          );
-        }
-      }, 4000);
     })();
   </script>
 </body>
