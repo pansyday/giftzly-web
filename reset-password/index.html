@@ -471,7 +471,7 @@
       const SUPABASE_URL = "https://wboqgmorfyqfhzonbvkm.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indib3FnbW9yZnlxZmh6b25idmttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE3NDc2MDAsImV4cCI6MjA3NzMyMzYwMH0.xKzHSU2wLzHvtC3Tnf90xH_1hDJL4_KKCDoSxP9yWJg";
 
-      const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      //const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       const url = new URL(window.location.href);
       const code = url.searchParams.get("code");
@@ -490,28 +490,41 @@
         upper:  document.querySelector('[data-rule="upper"]'),
         digit:  document.querySelector('[data-rule="digit"]'),
       };
-    
-      if (code) {
-        try {
-          const { error } = await client.auth.exchangeCodeForSession(code);
-          if (error) {
-            console.error("Exchange error:", error);
-            setStatus("Ce lien de réinitialisation n'est plus valide ou a expiré.", "error");
-            loadingEl.classList.add("hidden");
-          } else {
-            showForm();
-          }
-        } catch (e) {
-          console.error("Unexpected exchange error:", e);
-          setStatus("Une erreur est survenue lors de la validation du lien.", "error");
-          loadingEl.classList.add("hidden");
-        }
-      } else {
-        setStatus("Lien incorrect : aucun code n’a été fourni.", "error");
+
+      // 🔐 RÉCUPÉRATION DU TOKEN SESSION FOURNI PAR L’API SERVERLESS
+      function getCookie(name) {
+        return document.cookie
+          .split("; ")
+          .find((row) => row.startsWith(name + "="))
+          ?.split("=")[1] ?? null;
+      }
+      const accessToken = getCookie("giftzly_access_token");
+      if (!accessToken) {
         loadingEl.classList.add("hidden");
+        setStatus(
+          "Votre lien de réinitialisation a expiré ou est invalide. Veuillez refaire la procédure.",
+          "error"
+        );
+        throw new Error("Missing access token from cookie");
       }
 
+      // 🔐 Construction d’un client Supabase AVEC session déjà valide
+      const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+        global: {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      });
       
+      // ➜ La session étant déjà valide, on affiche directement le formulaire
+      loadingEl.classList.add("hidden");
+      formWrapperEl.classList.remove("hidden");
+
       function showForm() {
         loadingEl.classList.add("hidden");
         formWrapperEl.classList.remove("hidden");
